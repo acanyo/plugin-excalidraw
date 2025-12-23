@@ -4,22 +4,97 @@ metadata:
   name: excalidraw-settings
 spec:
   forms:
-    - group: attachment
-      label: 附件存储
+    - group: basic
+      label: 基本设置
       formSchema:
+        - $el: a
+          attrs:
+            href: "https://docs.lik.cc"
+            class: "py-4 block"
+            target: "_blank"
+            style:
+              color: "#1890ff"
+              fontSize: "0.875em"
+              display: "flex"
+              align-items: "center"
+          children:
+            - $el: span
+              children: "查看 绘图画板 帮助文档"
+            - $el: img
+              attrs:
+                src: "/plugins/excalidraw/assets/static/img/link.svg"
+                width: "14px"
+                height: "14px"
+                style:
+                  margin-left: "4px"
+        - $el: span
+          children: "Halo交流群"
+        - $el: div
+          attrs:
+            style:
+              display: "flex"
+              gap: "8px"
+              marginTop: "8px"
+          children:
+            - $el: a
+              attrs:
+                href: "https://qm.qq.com/q/mPJeUOtG5G"
+                target: "_blank"
+                style:
+                  color: "#1890ff"
+                  fontSize: "0.875em"
+                  padding: "4px 8px"
+                  backgroundColor: "#f0f8ff"
+                  borderRadius: "4px"
+                  textDecoration: "none"
+                  border: "1px solid #d1e7ff"
+              children: "加入群聊 766203360"
+            - $el: button
+              attrs:
+                type: "button"
+                onclick: "navigator.clipboard.writeText('766203360').then(() => alert('群号已复制到剪贴板'))"
+                style:
+                  color: "#1890ff"
+                  fontSize: "0.875em"
+                  padding: "4px 8px"
+                  backgroundColor: "#f0f8ff"
+                  borderRadius: "4px"
+                  border: "1px solid #d1e7ff"
+                  cursor: "pointer"
+              children: "复制群号"
+        - $formkit: group
+          name: previewSettings
+          label: 预览设置
+          children:
+            - $formkit: select
+              name: previewFormat
+              key: previewFormat
+              id: previewFormat
+              label: 预览格式
+              value: svg
+              help: "SVG 矢量清晰但文件较大，PNG 文件较小。预览图都会上传到附件库。"
+              options:
+                - label: SVG（矢量格式）
+                  value: svg
+                - label: PNG（位图格式）
+                  value: png
         - $formkit: group
           name: attachmentSettings
           label: 附件存储配置
-          help: "配置后可在编辑器中点击「保存到附件」按钮，将 .excalidraw 文件上传到 Halo 附件库，方便备份和管理。"
+          help: "配置存储预览图和 .excalidraw 文件的存储策略"
           children:
             - $formkit: select
-              name: fileGroup
-              key: fileGroup
-              id: fileGroup
-              label: 附件存储组
+              name: filePolicy
+              key: filePolicy
+              id: filePolicy
+              label: 附件存储策略
+              value: default-policy
               searchable: true
-              help: "选择用于存储 .excalidraw 文件的附件分组"
-              action: /apis/storage.halo.run/v1alpha1/groups?labelSelector=%21halo.run%2Fhidden&sort=metadata.creationTimestamp%2Cdesc
+              validation: required
+              validationMessages:
+                required: 请选择存储策略
+              help: "必填，选择存储预览图和 .excalidraw 文件的存储策略"
+              action: /apis/storage.halo.run/v1alpha1/policies
               requestOption:
                 method: GET
                 pageField: page
@@ -29,13 +104,13 @@ spec:
                 labelField: spec.displayName
                 valueField: metadata.name
             - $formkit: select
-              name: filePolicy
-              key: filePolicy
-              id: filePolicy
-              label: 附件存储策略
+              name: fileGroup
+              key: fileGroup
+              id: fileGroup
+              label: 附件存储组
               searchable: true
-              help: "选择用于存储 .excalidraw 文件的存储策略"
-              action: /apis/storage.halo.run/v1alpha1/policies
+              help: "可选，选择附件分组"
+              action: /apis/storage.halo.run/v1alpha1/groups?labelSelector=%21halo.run%2Fhidden&sort=metadata.creationTimestamp%2Cdesc
               requestOption:
                 method: GET
                 pageField: page

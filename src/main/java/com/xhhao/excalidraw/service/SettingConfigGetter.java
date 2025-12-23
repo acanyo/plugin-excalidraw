@@ -5,12 +5,23 @@ import reactor.core.publisher.Mono;
 
 public interface SettingConfigGetter {
     
-    Mono<AttachmentConfig> getAttachmentConfig();
+    Mono<BasicConfig> getBasicConfig();
 
     @Data
-    class AttachmentConfig {
-        public static final String GROUP = "attachment";
+    class BasicConfig {
+        public static final String GROUP = "basic";
+        
+        private PreviewSettings previewSettings;
         private AttachmentSettings attachmentSettings;
+    }
+    
+    @Data
+    class PreviewSettings {
+        private String previewFormat = "svg";
+        
+        public boolean isPng() {
+            return "png".equalsIgnoreCase(previewFormat);
+        }
     }
     
     @Data

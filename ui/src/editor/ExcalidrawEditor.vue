@@ -86,6 +86,31 @@ const initExcalidraw = async () => {
     reactContainer.style.display = 'flex'
     containerRef.value.appendChild(reactContainer)
 
+    // 自定义菜单
+    const { MainMenu } = await import('@excalidraw/excalidraw')
+    
+    const customMenu = React.createElement(
+      MainMenu,
+      null,
+      React.createElement(MainMenu.DefaultItems.LoadScene),
+      React.createElement(MainMenu.DefaultItems.SaveToActiveFile),
+      React.createElement(MainMenu.DefaultItems.Export),
+      React.createElement(MainMenu.DefaultItems.SaveAsImage),
+      React.createElement(MainMenu.DefaultItems.Help),
+      React.createElement(MainMenu.DefaultItems.ClearCanvas),
+      React.createElement(MainMenu.Separator),
+      React.createElement(MainMenu.DefaultItems.ChangeCanvasBackground),
+      React.createElement(MainMenu.Separator),
+      React.createElement(
+        MainMenu.ItemLink as any,
+        { href: 'https://www.xhhao.com', children: '🏠 插件开发者博客' }
+      ),
+      React.createElement(
+        MainMenu.ItemLink as any,
+        { href: 'https://github.com/acanyo/excalidraw/issues', children: '💬 问题反馈' }
+      )
+    )
+
     const ExcalidrawComponent = React.createElement(Excalidraw, {
       initialData: {
         elements: initialElements,
@@ -109,8 +134,11 @@ const initExcalidraw = async () => {
           saveAsImage: true,
           clearCanvas: true,
         },
+        tools: {
+          image: true,
+        },
       },
-    })
+    }, customMenu)
 
     root = ReactDOM.createRoot(reactContainer)
     root.render(ExcalidrawComponent)
@@ -309,6 +337,25 @@ watch(
 
 .excalidraw .sidebar__wrapper {
   overflow: visible !important;
+}
+
+/* 隐藏汉堡菜单中的 Excalidraw links */
+.excalidraw .dropdown-menu-group:has(.dropdown-menu-item__icon svg[class*="github"]),
+.excalidraw .dropdown-menu-group:has(a[href*="github.com/excalidraw"]),
+.excalidraw .dropdown-menu-group:has(a[href*="discord"]),
+.excalidraw [class*="excalidraw-links"],
+.excalidraw .dropdown-menu-group--header:has(+ .dropdown-menu-group a[href*="github"]) {
+  display: none !important;
+}
+
+/* 隐藏帮助对话框中的官方链接 */
+.excalidraw .HelpDialog a[href*="docs.excalidraw"],
+.excalidraw .HelpDialog a[href*="blog.excalidraw"],
+.excalidraw .HelpDialog a[href*="github.com/excalidraw"],
+.excalidraw [class*="HelpDialog"] a[href*="excalidraw"],
+.excalidraw .Modal a[href*="excalidraw.com"],
+.excalidraw .Dialog a[href*="excalidraw.com"] {
+  display: none !important;
 }
 
 </style>

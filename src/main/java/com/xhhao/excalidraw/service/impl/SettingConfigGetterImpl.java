@@ -14,8 +14,8 @@ public class SettingConfigGetterImpl implements SettingConfigGetter {
     private final ReactiveSettingFetcher settingFetcher;
 
     @Override
-    public Mono<AttachmentConfig> getAttachmentConfig() {
-        return settingFetcher.fetch(AttachmentConfig.GROUP, AttachmentConfig.class)
-            .defaultIfEmpty(new AttachmentConfig());
+    public Mono<BasicConfig> getBasicConfig() {
+        return settingFetcher.fetch(BasicConfig.GROUP, BasicConfig.class)
+            .defaultIfEmpty(new BasicConfig());
     }
 }

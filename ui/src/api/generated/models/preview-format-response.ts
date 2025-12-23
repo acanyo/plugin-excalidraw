@@ -17,20 +17,14 @@
 /**
  * 
  * @export
- * @interface UploadResponse
+ * @interface PreviewFormatResponse
  */
-export interface UploadResponse {
+export interface PreviewFormatResponse {
     /**
      * 
      * @type {string}
-     * @memberof UploadResponse
+     * @memberof PreviewFormatResponse
      */
-    'attachmentName'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof UploadResponse
-     */
-    'url'?: string;
+    'format'?: string;
 }
 

@@ -51,6 +51,19 @@ public class ExcalidrawEndpoint implements CustomEndpoint {
                     .requestBody(requestBodyBuilder().implementation(UploadRequest.class))
                     .response(responseBuilder().implementation(UploadResponse.class))
             )
+            .POST("drawings/upload-preview", this::uploadPreviewImage, builder -> 
+                builder.operationId("UploadPreviewImage")
+                    .tag(tag)
+                    .description("上传预览图到附件库（支持 SVG 和 PNG）")
+                    .requestBody(requestBodyBuilder().implementation(UploadPreviewRequest.class))
+                    .response(responseBuilder().implementation(UploadResponse.class))
+            )
+            .GET("settings/preview-format", this::getPreviewFormat, builder ->
+                builder.operationId("GetPreviewFormat")
+                    .tag(tag)
+                    .description("获取预览格式设置")
+                    .response(responseBuilder().implementation(PreviewFormatResponse.class))
+            )
             .build();
     }
 
@@ -67,8 +80,26 @@ public class ExcalidrawEndpoint implements CustomEndpoint {
                 req.getJsonContent(), 
                 req.getUserName()
             ))
-            .flatMap(url -> ServerResponse.ok().bodyValue(new UploadResponse(url)))
-            .switchIfEmpty(ServerResponse.ok().bodyValue(new UploadResponse("")));
+            .flatMap(url -> ServerResponse.ok().bodyValue(new UploadResponse(url, null)))
+            .switchIfEmpty(ServerResponse.ok().bodyValue(new UploadResponse("", null)));
+    }
+
+    Mono<ServerResponse> uploadPreviewImage(ServerRequest request) {
+        return request.bodyToMono(UploadPreviewRequest.class)
+            .flatMap(req -> excalidrawService.uploadPreviewImage(
+                req.getFileName(),
+                req.getContent(),
+                req.getFormat(),
+                req.getUserName(),
+                req.getOldAttachmentName()
+            ))
+            .flatMap(result -> ServerResponse.ok().bodyValue(new UploadResponse(result.getUrl(), result.getAttachmentName())))
+            .switchIfEmpty(ServerResponse.ok().bodyValue(new UploadResponse("", null)));
+    }
+
+    Mono<ServerResponse> getPreviewFormat(ServerRequest request) {
+        return excalidrawService.getPreviewFormat()
+            .flatMap(format -> ServerResponse.ok().bodyValue(new PreviewFormatResponse(format)));
     }
 
     @Override
@@ -86,8 +117,27 @@ public class ExcalidrawEndpoint implements CustomEndpoint {
     @Data
     public static class UploadResponse {
         private final String url;
-        public UploadResponse(String url) {
+        private final String attachmentName;
+        public UploadResponse(String url, String attachmentName) {
             this.url = url;
+            this.attachmentName = attachmentName;
+        }
+    }
+
+    @Data
+    public static class UploadPreviewRequest {
+        private String fileName;
+        private String content;  // SVG 字符串或 PNG base64
+        private String format;   // svg 或 png
+        private String userName;
+        private String oldAttachmentName;  // 旧附件名称，用于删除
+    }
+
+    @Data
+    public static class PreviewFormatResponse {
+        private final String format;
+        public PreviewFormatResponse(String format) {
+            this.format = format;
         }
     }
 }

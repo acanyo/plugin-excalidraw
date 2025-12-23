@@ -18,8 +18,10 @@ models/index.ts
 models/json-patch-inner.ts
 models/metadata.ts
 models/move-operation.ts
+models/preview-format-response.ts
 models/remove-operation.ts
 models/replace-operation.ts
 models/test-operation.ts
+models/upload-preview-request.ts
 models/upload-request.ts
 models/upload-response.ts

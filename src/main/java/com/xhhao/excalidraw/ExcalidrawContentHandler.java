@@ -58,21 +58,25 @@ public class ExcalidrawContentHandler implements ReactivePostContentHandler {
         // 添加匹配之前的内容
         result.append(content, lastEnd, matchStart);
 
-        return getDrawingSvg(drawingName)
+        return getDrawingPreview(drawingName)
             .defaultIfEmpty(createPlaceholder(drawingName))
-            .flatMap(svg -> {
-                result.append(svg);
+            .flatMap(preview -> {
+                result.append(preview);
                 return processMatches(content, matcher, result, matchEnd);
             });
     }
 
-    private Mono<String> getDrawingSvg(String drawingName) {
+    private Mono<String> getDrawingPreview(String drawingName) {
         return client.fetch(Drawing.class, drawingName)
             .map(drawing -> {
-                String svg = drawing.getSpec().getSvg();
-                if (svg != null && !svg.isBlank()) {
-                    return wrapSvg(svg, drawing.getSpec().getDisplayName());
+                var spec = drawing.getSpec();
+                String displayName = spec.getDisplayName();
+                String previewUrl = spec.getPreviewUrl();
+                
+                if (previewUrl != null && !previewUrl.isBlank()) {
+                    return wrapImage(previewUrl, displayName);
                 }
+                
                 return createPlaceholder(drawingName);
             })
             .onErrorResume(e -> {
@@ -83,17 +87,18 @@ public class ExcalidrawContentHandler implements ReactivePostContentHandler {
 
     private static final String CONTAINER_STYLE = 
         "width:100%;max-width:100%;margin:1rem 0;overflow-x:auto;";
-    private static final String SVG_STYLE = 
+    private static final String IMG_STYLE = 
         "max-width:100%;height:auto;display:block;";
 
-    private String wrapSvg(String svg, String displayName) {
-        // 内联样式，插件自包含不依赖主题
-        String processedSvg = svg.replaceFirst("<svg ", "<svg style=\"" + SVG_STYLE + "\" ");
+    private String wrapImage(String url, String displayName) {
         return String.format(
-            "<figure class=\"excalidraw-drawing\" data-name=\"%s\" style=\"%s\">%s</figure>",
+            "<figure class=\"excalidraw-drawing\" data-name=\"%s\" style=\"%s\">" +
+            "<img src=\"%s\" alt=\"%s\" style=\"%s\" loading=\"lazy\"/></figure>",
             escapeHtml(displayName != null ? displayName : ""),
             CONTAINER_STYLE,
-            processedSvg
+            escapeHtml(url),
+            escapeHtml(displayName != null ? displayName : "Excalidraw Drawing"),
+            IMG_STYLE
         );
     }
 

@@ -33,10 +33,21 @@ public class Drawing extends AbstractExtension {
          * Excalidraw 绘图数据 (JSON)
          */
         private String data;
-
+        
         /**
-         * SVG 预览数据
+         * 预览图 URL（存储在附件库，支持 SVG 和 PNG）
          */
-        private String svg;
+        private String previewUrl;
+        
+        /**
+         * 预览格式: svg 或 png
+         */
+        private String previewFormat;
+        
+        /**
+         * 预览图附件的 metadata.name，用于更新时删除旧附件
+         */
+        @Schema(requiredMode = REQUIRED)
+        private String previewAttachmentName;
     }
 }

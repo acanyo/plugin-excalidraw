@@ -5,7 +5,7 @@
     "version" : "2.21.10"
   },
   "servers" : [ {
-    "url" : "http://localhost:33595",
+    "url" : "http://localhost:64018",
     "description" : "Generated server url"
   } ],
   "security" : [ {
@@ -105,6 +105,53 @@
               "*/*" : {
                 "schema" : {
                   "$ref" : "#/components/schemas/UploadResponse"
+                }
+              }
+            },
+            "description" : "default response"
+          }
+        },
+        "tags" : [ "api.excalidraw.xhhao.com/v1alpha1/Drawing" ]
+      }
+    },
+    "/apis/api.excalidraw.xhhao.com/v1alpha1/drawings/upload-preview" : {
+      "post" : {
+        "description" : "上传预览图到附件库（支持 SVG 和 PNG）",
+        "operationId" : "UploadPreviewImage",
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/UploadPreviewRequest"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "default" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/UploadResponse"
+                }
+              }
+            },
+            "description" : "default response"
+          }
+        },
+        "tags" : [ "api.excalidraw.xhhao.com/v1alpha1/Drawing" ]
+      }
+    },
+    "/apis/api.excalidraw.xhhao.com/v1alpha1/settings/preview-format" : {
+      "get" : {
+        "description" : "获取预览格式设置",
+        "operationId" : "GetPreviewFormat",
+        "responses" : {
+          "default" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/PreviewFormatResponse"
                 }
               }
             },
@@ -446,7 +493,13 @@
           "displayName" : {
             "type" : "string"
           },
-          "svg" : {
+          "previewAttachmentName" : {
+            "type" : "string"
+          },
+          "previewFormat" : {
+            "type" : "string"
+          },
+          "previewUrl" : {
             "type" : "string"
           }
         }
@@ -550,6 +603,14 @@
           }
         }
       },
+      "PreviewFormatResponse" : {
+        "type" : "object",
+        "properties" : {
+          "format" : {
+            "type" : "string"
+          }
+        }
+      },
       "RemoveOperation" : {
         "required" : [ "op", "path" ],
         "type" : "object",
@@ -604,6 +665,26 @@
           }
         }
       },
+      "UploadPreviewRequest" : {
+        "type" : "object",
+        "properties" : {
+          "content" : {
+            "type" : "string"
+          },
+          "fileName" : {
+            "type" : "string"
+          },
+          "format" : {
+            "type" : "string"
+          },
+          "oldAttachmentName" : {
+            "type" : "string"
+          },
+          "userName" : {
+            "type" : "string"
+          }
+        }
+      },
       "UploadRequest" : {
         "type" : "object",
         "properties" : {
@@ -621,6 +702,9 @@
       "UploadResponse" : {
         "type" : "object",
         "properties" : {
+          "attachmentName" : {
+            "type" : "string"
+          },
           "url" : {
             "type" : "string"
           }

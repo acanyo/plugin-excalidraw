@@ -9,14 +9,17 @@ const props = defineProps(nodeViewProps)
 
 const showEditor = ref(false)
 const drawingData = ref<string | null>(null)
-const svgPreview = ref<string | null>(null)
+const previewContent = ref<string | null>(null)  // SVG 字符串或 PNG base64
+const previewUrl = ref<string | null>(null)      // 附件库 URL
+const previewFormat = ref<'svg' | 'png'>('svg')  // 预览格式
+const previewAttachmentName = ref<string | null>(null)  // 附件 metadata.name
 const isLoading = ref(false)
 const isSaving = ref(false)
 const editorRef = ref<InstanceType<typeof ExcalidrawEditor> | null>(null)
 const isExistingDrawing = ref(false)
 const libraryItems = ref<any[]>([])
 const inputFileName = ref('')
-const pendingSaveData = ref<{ jsonData: string; svgData: string } | null>(null)
+const pendingSaveData = ref<{ jsonData: string; previewContent: string } | null>(null)
 const pendingUpload = ref(false)
 const nameDialogRef = ref<HTMLDialogElement | null>(null)
 const nameInputRef = ref<HTMLInputElement | null>(null)
@@ -133,26 +136,47 @@ const handleSave = async (data: { elements: any[]; appState: any; files: any }) 
   
   isSaving.value = true
   try {
-    const jsonData = JSON.stringify(data)
+    // 使用 Excalidraw 内置的序列化函数导出标准格式
+    const { serializeAsJSON } = await import('@excalidraw/excalidraw')
+    const jsonData = serializeAsJSON(data.elements, data.appState, data.files || {}, 'local')
     drawingData.value = jsonData
 
-    const { exportToSvg } = await import('@excalidraw/excalidraw')
-    const svg = await exportToSvg({
-      elements: data.elements,
-      appState: {
-        ...data.appState,
-        exportWithDarkMode: false,
-        exportEmbedScene: true,
-      },
-      files: data.files,
-      exportPadding: 10,
-    })
+    // 根据格式设置导出 SVG 或 PNG
+    let content: string
+    if (previewFormat.value === 'png') {
+      const { exportToBlob } = await import('@excalidraw/excalidraw')
+      const blob = await exportToBlob({
+        elements: data.elements,
+        appState: {
+          ...data.appState,
+          exportWithDarkMode: false,
+        },
+        files: data.files,
+        exportPadding: 10,
+        mimeType: 'image/png',
+        quality: 1,
+        getDimensions: (width: number, height: number) => ({ width: width * 3, height: height * 3, scale: 3 }),
+      })
+      content = await blobToBase64(blob)
+    } else {
+      const { exportToSvg } = await import('@excalidraw/excalidraw')
+      const svg = await exportToSvg({
+        elements: data.elements,
+        appState: {
+          ...data.appState,
+          exportWithDarkMode: false,
+          exportEmbedScene: true,
+        },
+        files: data.files,
+        exportPadding: 10,
+      })
+      content = await embedFontsInSvg(svg.outerHTML)
+    }
     
-    const embeddedSvg = await embedFontsInSvg(svg.outerHTML)
-    svgPreview.value = embeddedSvg
+    previewContent.value = content
 
     if (!drawingName.value) {
-      pendingSaveData.value = { jsonData, svgData: embeddedSvg }
+      pendingSaveData.value = { jsonData, previewContent: content }
       pendingUpload.value = false
       inputFileName.value = ''
       showNameDialog()
@@ -160,7 +184,7 @@ const handleSave = async (data: { elements: any[]; appState: any; files: any }) 
       return
     }
 
-    await saveDrawing(jsonData, embeddedSvg)
+    await saveDrawing(jsonData, content)
     closeEditor()
   } catch (error) {
     console.error('保存绘图失败:', error)
@@ -170,6 +194,15 @@ const handleSave = async (data: { elements: any[]; appState: any; files: any }) 
   }
 }
 
+const blobToBase64 = (blob: Blob): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onloadend = () => resolve(reader.result as string)
+    reader.onerror = reject
+    reader.readAsDataURL(blob)
+  })
+}
+
 const confirmFileName = async () => {
   const name = inputFileName.value.trim() || `drawing-${Date.now()}`
   closeNameDialog()
@@ -177,7 +210,7 @@ const confirmFileName = async () => {
   isSaving.value = true
   try {
     if (pendingSaveData.value) {
-      await saveDrawingWithName(name, pendingSaveData.value.jsonData, pendingSaveData.value.svgData)
+      await saveDrawingWithName(name, pendingSaveData.value.jsonData, pendingSaveData.value.previewContent)
       
       if (pendingUpload.value) {
         await doUploadToAttachment(name, pendingSaveData.value.jsonData)
@@ -200,35 +233,62 @@ const cancelNameModal = () => {
   pendingUpload.value = false
 }
 
-const saveDrawingWithName = async (name: string, jsonData: string, svgData: string) => {
+const saveDrawingWithName = async (name: string, jsonData: string, content: string) => {
+  // 上传预览图到附件库
+  const uploadResult = await uploadPreviewToAttachment(name, content)
+  
   const drawingPayload: any = {
     apiVersion: 'excalidraw.xhhao.com/v1alpha1',
     kind: 'Drawing',
     metadata: { name },
-    spec: { displayName: name, data: jsonData, svg: svgData },
+    spec: { 
+      displayName: name, 
+      data: jsonData, 
+      previewUrl: uploadResult.url,
+      previewFormat: previewFormat.value,
+      previewAttachmentName: uploadResult.attachmentName
+    },
   }
   
   await excalidrawCoreApiClient.createDrawing({ drawing: drawingPayload })
+  previewUrl.value = uploadResult.url
+  previewAttachmentName.value = uploadResult.attachmentName
   isExistingDrawing.value = true
   props.updateAttributes({ drawingName: name })
   Toast.success('保存成功')
 }
 
-const saveDrawing = async (jsonData: string, svgData: string) => {
+const saveDrawing = async (jsonData: string, content: string) => {
   const name = drawingName.value!
   const isNewDrawing = !isExistingDrawing.value
+
+  // 上传预览图到附件库
+  const uploadResult = await uploadPreviewToAttachment(name, content)
 
   const drawingPayload: any = {
     apiVersion: 'excalidraw.xhhao.com/v1alpha1',
     kind: 'Drawing',
     metadata: { name },
-    spec: { displayName: name, data: jsonData, svg: svgData },
+    spec: { 
+      displayName: name, 
+      data: jsonData, 
+      previewUrl: uploadResult.url,
+      previewFormat: previewFormat.value,
+      previewAttachmentName: uploadResult.attachmentName
+    },
   }
   if (isExistingDrawing.value) {
     try {
       const { data: existing } = await excalidrawCoreApiClient.getDrawing({ name })
       drawingPayload.metadata = existing.metadata
-      drawingPayload.spec = { ...existing.spec, displayName: name, data: jsonData, svg: svgData }
+      drawingPayload.spec = { 
+        ...existing.spec, 
+        displayName: name, 
+        data: jsonData, 
+        previewUrl: uploadResult.url,
+        previewFormat: previewFormat.value,
+        previewAttachmentName: uploadResult.attachmentName
+      }
       await excalidrawCoreApiClient.updateDrawing({ name, drawing: drawingPayload })
     } catch (e) {
       await excalidrawCoreApiClient.createDrawing({ drawing: drawingPayload })
@@ -239,8 +299,32 @@ const saveDrawing = async (jsonData: string, svgData: string) => {
     isExistingDrawing.value = true
   }
 
+  previewUrl.value = uploadResult.url
+  previewAttachmentName.value = uploadResult.attachmentName
   if (isNewDrawing) {
     props.updateAttributes({ drawingName: name })
+  }
+}
+
+// 上传预览图到附件库
+const uploadPreviewToAttachment = async (fileName: string, content: string): Promise<{ url: string; attachmentName: string | null }> => {
+  try {
+    const { data } = await apiExcalidrawCoreApiClient.uploadPreviewImage({
+      uploadPreviewRequest: { 
+        fileName, 
+        content, 
+        format: previewFormat.value,
+        userName: '',
+        oldAttachmentName: previewAttachmentName.value || ''
+      }
+    })
+    if (data.url && data.url !== '未配置存储策略') {
+      return { url: data.url, attachmentName: data.attachmentName || null }
+    }
+    return { url: '', attachmentName: null }
+  } catch (e) {
+    console.error('上传预览图失败:', e)
+    return { url: '', attachmentName: null }
   }
 }
 
@@ -267,7 +351,7 @@ const uploadToAttachment = async () => {
       Toast.warning('请先保存绘图')
       return
     }
-    pendingSaveData.value = { jsonData: drawingData.value, svgData: svgPreview.value || '' }
+    pendingSaveData.value = { jsonData: drawingData.value, previewContent: previewContent.value || '' }
     pendingUpload.value = true
     inputFileName.value = ''
     showNameDialog()
@@ -294,10 +378,11 @@ const loadDrawing = async () => {
     if (drawing.spec?.data) {
       drawingData.value = drawing.spec.data
       isExistingDrawing.value = true
-      if (drawing.spec.svg) {
-        svgPreview.value = drawing.spec.svg
-      } else {
-        await generatePreview(drawing.spec.data)
+      
+      if (drawing.spec.previewUrl) {
+        previewUrl.value = drawing.spec.previewUrl
+        previewFormat.value = (drawing.spec.previewFormat as 'svg' | 'png') || 'svg'
+        previewAttachmentName.value = drawing.spec.previewAttachmentName || null
       }
     }
   } catch (error: any) {
@@ -325,9 +410,21 @@ const generatePreview = async (jsonData: string) => {
       exportPadding: 10,
     })
     const embeddedSvg = await embedFontsInSvg(svg.outerHTML)
-    svgPreview.value = embeddedSvg
+    previewContent.value = embeddedSvg
   } catch (error) {
     console.error('生成预览失败:', error)
+  }
+}
+
+// 获取预览格式设置
+const fetchPreviewFormat = async () => {
+  try {
+    const { data } = await apiExcalidrawCoreApiClient.getPreviewFormat()
+    if (data.format) {
+      previewFormat.value = data.format as 'svg' | 'png'
+    }
+  } catch (e) {
+    console.warn('获取预览格式设置失败:', e)
   }
 }
 
@@ -359,7 +456,8 @@ const loadLibraryItems = async () => {
   }
 }
 
-onMounted(() => {
+onMounted(async () => {
+  await fetchPreviewFormat()
   if (drawingName.value) {
     loadDrawing()
   }
@@ -387,8 +485,8 @@ watch(
         <span>加载中...</span>
       </div>
 
-      <div v-else-if="svgPreview" class="excalidraw-preview">
-        <div class="svg-container" v-html="svgPreview"></div>
+      <div v-else-if="previewUrl" class="excalidraw-preview">
+        <img :src="previewUrl" class="preview-image" alt="Excalidraw Drawing" />
         <div class="preview-hint">
           <span>双击编辑 · 单击选中后可删除</span>
         </div>
@@ -505,6 +603,15 @@ watch(
   height: 100%;
   position: relative;
   overflow: hidden;
+
+  .preview-image {
+    width: 100%;
+    max-height: 500px;
+    display: block;
+    object-fit: contain;
+    padding: 1rem;
+    box-sizing: border-box;
+  }
 
   .svg-container {
     width: 100%;

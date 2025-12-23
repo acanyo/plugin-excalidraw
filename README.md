@@ -6,6 +6,12 @@
 
 在 Halo 文章编辑器中集成 [Excalidraw](https://excalidraw.com/) 手绘风格白板，支持创建、编辑和保存绘图，可将 `.excalidraw` 文件上传到附件库备份管理。
 
+## 🌐 演示与交流
+
+- **演示站点1**：[https://www.xhhao.com/](https://www.xhhao.com/)
+- **文档**：[https://docs.lik.cc/](https://docs.lik.cc/)
+- **QQ 交流群**：[![QQ群](https://www.xhhao.com/upload/iShot_2025-03-03_16.03.00.png)](https://www.xhhao.com/upload/iShot_2025-03-03_16.03.00.png)
+
 ## 截图
 
 ### 文章渲染

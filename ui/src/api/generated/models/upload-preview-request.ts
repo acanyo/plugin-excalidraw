@@ -17,38 +17,38 @@
 /**
  * 
  * @export
- * @interface DrawingSpec
+ * @interface UploadPreviewRequest
  */
-export interface DrawingSpec {
+export interface UploadPreviewRequest {
     /**
      * 
      * @type {string}
-     * @memberof DrawingSpec
+     * @memberof UploadPreviewRequest
      */
-    'data'?: string;
+    'content'?: string;
     /**
      * 
      * @type {string}
-     * @memberof DrawingSpec
+     * @memberof UploadPreviewRequest
      */
-    'displayName'?: string;
+    'fileName'?: string;
     /**
      * 
      * @type {string}
-     * @memberof DrawingSpec
+     * @memberof UploadPreviewRequest
      */
-    'previewAttachmentName'?: string;
+    'format'?: string;
     /**
      * 
      * @type {string}
-     * @memberof DrawingSpec
+     * @memberof UploadPreviewRequest
      */
-    'previewFormat'?: string;
+    'oldAttachmentName'?: string;
     /**
      * 
      * @type {string}
-     * @memberof DrawingSpec
+     * @memberof UploadPreviewRequest
      */
-    'previewUrl'?: string;
+    'userName'?: string;
 }
 

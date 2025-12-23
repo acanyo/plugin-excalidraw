@@ -24,6 +24,10 @@ import { BASE_PATH, COLLECTION_FORMATS, type RequestArgs, BaseAPI, RequiredError
 // @ts-ignore
 import type { DrawingList } from '../models';
 // @ts-ignore
+import type { PreviewFormatResponse } from '../models';
+// @ts-ignore
+import type { UploadPreviewRequest } from '../models';
+// @ts-ignore
 import type { UploadRequest } from '../models';
 // @ts-ignore
 import type { UploadResponse } from '../models';
@@ -33,6 +37,43 @@ import type { UploadResponse } from '../models';
  */
 export const ApiExcalidrawXhhaoComV1alpha1DrawingApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
+        /**
+         * 获取预览格式设置
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getPreviewFormat: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/apis/api.excalidraw.xhhao.com/v1alpha1/settings/preview-format`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication basicAuth required
+            // http basic authentication required
+            setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication bearerAuth required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
         /**
          * 分页查询绘图列表
          * @param {number} [page] Page number. Default is 0.
@@ -141,6 +182,47 @@ export const ApiExcalidrawXhhaoComV1alpha1DrawingApiAxiosParamCreator = function
                 options: localVarRequestOptions,
             };
         },
+        /**
+         * 上传预览图到附件库（支持 SVG 和 PNG）
+         * @param {UploadPreviewRequest} [uploadPreviewRequest] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        uploadPreviewImage: async (uploadPreviewRequest?: UploadPreviewRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/apis/api.excalidraw.xhhao.com/v1alpha1/drawings/upload-preview`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication basicAuth required
+            // http basic authentication required
+            setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            // authentication bearerAuth required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(uploadPreviewRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
     }
 };
 
@@ -151,6 +233,17 @@ export const ApiExcalidrawXhhaoComV1alpha1DrawingApiAxiosParamCreator = function
 export const ApiExcalidrawXhhaoComV1alpha1DrawingApiFp = function(configuration?: Configuration) {
     const localVarAxiosParamCreator = ApiExcalidrawXhhaoComV1alpha1DrawingApiAxiosParamCreator(configuration)
     return {
+        /**
+         * 获取预览格式设置
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getPreviewFormat(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PreviewFormatResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getPreviewFormat(options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['ApiExcalidrawXhhaoComV1alpha1DrawingApi.getPreviewFormat']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
         /**
          * 分页查询绘图列表
          * @param {number} [page] Page number. Default is 0.
@@ -180,6 +273,18 @@ export const ApiExcalidrawXhhaoComV1alpha1DrawingApiFp = function(configuration?
             const localVarOperationServerBasePath = operationServerMap['ApiExcalidrawXhhaoComV1alpha1DrawingApi.uploadExcalidrawFile']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
+        /**
+         * 上传预览图到附件库（支持 SVG 和 PNG）
+         * @param {UploadPreviewRequest} [uploadPreviewRequest] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async uploadPreviewImage(uploadPreviewRequest?: UploadPreviewRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UploadResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.uploadPreviewImage(uploadPreviewRequest, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['ApiExcalidrawXhhaoComV1alpha1DrawingApi.uploadPreviewImage']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
     }
 };
 
@@ -190,6 +295,14 @@ export const ApiExcalidrawXhhaoComV1alpha1DrawingApiFp = function(configuration?
 export const ApiExcalidrawXhhaoComV1alpha1DrawingApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
     const localVarFp = ApiExcalidrawXhhaoComV1alpha1DrawingApiFp(configuration)
     return {
+        /**
+         * 获取预览格式设置
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getPreviewFormat(options?: RawAxiosRequestConfig): AxiosPromise<PreviewFormatResponse> {
+            return localVarFp.getPreviewFormat(options).then((request) => request(axios, basePath));
+        },
         /**
          * 分页查询绘图列表
          * @param {ApiExcalidrawXhhaoComV1alpha1DrawingApiListDrawingsRequest} requestParameters Request parameters.
@@ -207,6 +320,15 @@ export const ApiExcalidrawXhhaoComV1alpha1DrawingApiFactory = function (configur
          */
         uploadExcalidrawFile(requestParameters: ApiExcalidrawXhhaoComV1alpha1DrawingApiUploadExcalidrawFileRequest = {}, options?: RawAxiosRequestConfig): AxiosPromise<UploadResponse> {
             return localVarFp.uploadExcalidrawFile(requestParameters.uploadRequest, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 上传预览图到附件库（支持 SVG 和 PNG）
+         * @param {ApiExcalidrawXhhaoComV1alpha1DrawingApiUploadPreviewImageRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        uploadPreviewImage(requestParameters: ApiExcalidrawXhhaoComV1alpha1DrawingApiUploadPreviewImageRequest = {}, options?: RawAxiosRequestConfig): AxiosPromise<UploadResponse> {
+            return localVarFp.uploadPreviewImage(requestParameters.uploadPreviewRequest, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -275,12 +397,36 @@ export interface ApiExcalidrawXhhaoComV1alpha1DrawingApiUploadExcalidrawFileRequ
 }
 
 /**
+ * Request parameters for uploadPreviewImage operation in ApiExcalidrawXhhaoComV1alpha1DrawingApi.
+ * @export
+ * @interface ApiExcalidrawXhhaoComV1alpha1DrawingApiUploadPreviewImageRequest
+ */
+export interface ApiExcalidrawXhhaoComV1alpha1DrawingApiUploadPreviewImageRequest {
+    /**
+     * 
+     * @type {UploadPreviewRequest}
+     * @memberof ApiExcalidrawXhhaoComV1alpha1DrawingApiUploadPreviewImage
+     */
+    readonly uploadPreviewRequest?: UploadPreviewRequest
+}
+
+/**
  * ApiExcalidrawXhhaoComV1alpha1DrawingApi - object-oriented interface
  * @export
  * @class ApiExcalidrawXhhaoComV1alpha1DrawingApi
  * @extends {BaseAPI}
  */
 export class ApiExcalidrawXhhaoComV1alpha1DrawingApi extends BaseAPI {
+    /**
+     * 获取预览格式设置
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ApiExcalidrawXhhaoComV1alpha1DrawingApi
+     */
+    public getPreviewFormat(options?: RawAxiosRequestConfig) {
+        return ApiExcalidrawXhhaoComV1alpha1DrawingApiFp(this.configuration).getPreviewFormat(options).then((request) => request(this.axios, this.basePath));
+    }
+
     /**
      * 分页查询绘图列表
      * @param {ApiExcalidrawXhhaoComV1alpha1DrawingApiListDrawingsRequest} requestParameters Request parameters.
@@ -301,6 +447,17 @@ export class ApiExcalidrawXhhaoComV1alpha1DrawingApi extends BaseAPI {
      */
     public uploadExcalidrawFile(requestParameters: ApiExcalidrawXhhaoComV1alpha1DrawingApiUploadExcalidrawFileRequest = {}, options?: RawAxiosRequestConfig) {
         return ApiExcalidrawXhhaoComV1alpha1DrawingApiFp(this.configuration).uploadExcalidrawFile(requestParameters.uploadRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 上传预览图到附件库（支持 SVG 和 PNG）
+     * @param {ApiExcalidrawXhhaoComV1alpha1DrawingApiUploadPreviewImageRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ApiExcalidrawXhhaoComV1alpha1DrawingApi
+     */
+    public uploadPreviewImage(requestParameters: ApiExcalidrawXhhaoComV1alpha1DrawingApiUploadPreviewImageRequest = {}, options?: RawAxiosRequestConfig) {
+        return ApiExcalidrawXhhaoComV1alpha1DrawingApiFp(this.configuration).uploadPreviewImage(requestParameters.uploadPreviewRequest, options).then((request) => request(this.axios, this.basePath));
     }
 }
 
