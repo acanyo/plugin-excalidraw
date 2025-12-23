@@ -1,0 +1,23 @@
+# Refer https://docs.halo.run/developer-guide/plugin/basics/manifest
+
+apiVersion: plugin.halo.run/v1alpha1
+kind: Plugin
+metadata:
+  name: excalidraw
+spec:
+  enabled: true
+  requires: ">=2.21.0"
+  author:
+    name: Handsome
+    website: https://github.com/Handsome
+  logo: logo.svg
+  homepage: https://github.com/Handsome/excalidraw#readme
+  repo: https://github.com/Handsome/excalidraw
+  issues: https://github.com/Handsome/excalidraw/issues
+  displayName: "Excalidraw 绘图"
+  description: "在 Halo 文章编辑器中集成 Excalidraw 绘图功能"
+  license:
+    - name: "GPL-3.0"
+      url: "https://github.com/Handsome/excalidraw/blob/main/LICENSE"
+  settingName: "excalidraw-settings"
+  configMapName: "excalidraw-configmap"

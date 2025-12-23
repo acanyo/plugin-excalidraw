@@ -1,0 +1,642 @@
+{
+  "openapi" : "3.0.1",
+  "info" : {
+    "title" : "Halo",
+    "version" : "2.21.10"
+  },
+  "servers" : [ {
+    "url" : "http://localhost:33595",
+    "description" : "Generated server url"
+  } ],
+  "security" : [ {
+    "basicAuth" : [ ],
+    "bearerAuth" : [ ]
+  } ],
+  "paths" : {
+    "/apis/api.excalidraw.xhhao.com/v1alpha1/drawings" : {
+      "get" : {
+        "description" : "分页查询绘图列表",
+        "operationId" : "ListDrawings",
+        "parameters" : [ {
+          "description" : "Page number. Default is 0.",
+          "in" : "query",
+          "name" : "page",
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }, {
+          "description" : "Size number. Default is 0.",
+          "in" : "query",
+          "name" : "size",
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }, {
+          "description" : "Label selector. e.g.: hidden!=true",
+          "in" : "query",
+          "name" : "labelSelector",
+          "schema" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          }
+        }, {
+          "description" : "Field selector. e.g.: metadata.name==halo",
+          "in" : "query",
+          "name" : "fieldSelector",
+          "schema" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          }
+        }, {
+          "description" : "Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported.",
+          "in" : "query",
+          "name" : "sort",
+          "schema" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          }
+        }, {
+          "description" : "按名称关键字过滤绘图",
+          "in" : "query",
+          "name" : "keyword",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "default" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/DrawingList"
+                }
+              }
+            },
+            "description" : "default response"
+          }
+        },
+        "tags" : [ "api.excalidraw.xhhao.com/v1alpha1/Drawing" ]
+      }
+    },
+    "/apis/api.excalidraw.xhhao.com/v1alpha1/drawings/upload" : {
+      "post" : {
+        "description" : "上传 .excalidraw 文件到附件库",
+        "operationId" : "UploadExcalidrawFile",
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/UploadRequest"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "default" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/UploadResponse"
+                }
+              }
+            },
+            "description" : "default response"
+          }
+        },
+        "tags" : [ "api.excalidraw.xhhao.com/v1alpha1/Drawing" ]
+      }
+    },
+    "/apis/excalidraw.xhhao.com/v1alpha1/drawings" : {
+      "get" : {
+        "description" : "List Drawing",
+        "operationId" : "listDrawing",
+        "parameters" : [ {
+          "description" : "Page number. Default is 0.",
+          "in" : "query",
+          "name" : "page",
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }, {
+          "description" : "Size number. Default is 0.",
+          "in" : "query",
+          "name" : "size",
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }, {
+          "description" : "Label selector. e.g.: hidden!=true",
+          "in" : "query",
+          "name" : "labelSelector",
+          "schema" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          }
+        }, {
+          "description" : "Field selector. e.g.: metadata.name==halo",
+          "in" : "query",
+          "name" : "fieldSelector",
+          "schema" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          }
+        }, {
+          "description" : "Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported.",
+          "in" : "query",
+          "name" : "sort",
+          "schema" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/DrawingList"
+                }
+              }
+            },
+            "description" : "Response drawings"
+          }
+        },
+        "tags" : [ "DrawingV1alpha1" ]
+      },
+      "post" : {
+        "description" : "Create Drawing",
+        "operationId" : "createDrawing",
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/Drawing"
+              }
+            }
+          },
+          "description" : "Fresh drawing"
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Drawing"
+                }
+              }
+            },
+            "description" : "Response drawings created just now"
+          }
+        },
+        "tags" : [ "DrawingV1alpha1" ]
+      }
+    },
+    "/apis/excalidraw.xhhao.com/v1alpha1/drawings/{name}" : {
+      "delete" : {
+        "description" : "Delete Drawing",
+        "operationId" : "deleteDrawing",
+        "parameters" : [ {
+          "description" : "Name of drawing",
+          "in" : "path",
+          "name" : "name",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Response drawing deleted just now"
+          }
+        },
+        "tags" : [ "DrawingV1alpha1" ]
+      },
+      "get" : {
+        "description" : "Get Drawing",
+        "operationId" : "getDrawing",
+        "parameters" : [ {
+          "description" : "Name of drawing",
+          "in" : "path",
+          "name" : "name",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Drawing"
+                }
+              }
+            },
+            "description" : "Response single drawing"
+          }
+        },
+        "tags" : [ "DrawingV1alpha1" ]
+      },
+      "patch" : {
+        "description" : "Patch Drawing",
+        "operationId" : "patchDrawing",
+        "parameters" : [ {
+          "description" : "Name of drawing",
+          "in" : "path",
+          "name" : "name",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json-patch+json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/JsonPatch"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Drawing"
+                }
+              }
+            },
+            "description" : "Response drawing patched just now"
+          }
+        },
+        "tags" : [ "DrawingV1alpha1" ]
+      },
+      "put" : {
+        "description" : "Update Drawing",
+        "operationId" : "updateDrawing",
+        "parameters" : [ {
+          "description" : "Name of drawing",
+          "in" : "path",
+          "name" : "name",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/Drawing"
+              }
+            }
+          },
+          "description" : "Updated drawing"
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Drawing"
+                }
+              }
+            },
+            "description" : "Response drawings updated just now"
+          }
+        },
+        "tags" : [ "DrawingV1alpha1" ]
+      }
+    }
+  },
+  "components" : {
+    "schemas" : {
+      "AddOperation" : {
+        "required" : [ "op", "path", "value" ],
+        "type" : "object",
+        "properties" : {
+          "op" : {
+            "type" : "string",
+            "enum" : [ "add" ]
+          },
+          "path" : {
+            "pattern" : "^(/[^/~]*(~[01][^/~]*)*)*$",
+            "type" : "string",
+            "description" : "A JSON Pointer path pointing to the location to move/copy from.",
+            "example" : "/a/b/c"
+          },
+          "value" : {
+            "description" : "Value can be any JSON value"
+          }
+        }
+      },
+      "CopyOperation" : {
+        "required" : [ "op", "from", "path" ],
+        "type" : "object",
+        "properties" : {
+          "from" : {
+            "pattern" : "^(/[^/~]*(~[01][^/~]*)*)*$",
+            "type" : "string",
+            "description" : "A JSON Pointer path pointing to the location to move/copy from.",
+            "example" : "/a/b/c"
+          },
+          "op" : {
+            "type" : "string",
+            "enum" : [ "copy" ]
+          },
+          "path" : {
+            "pattern" : "^(/[^/~]*(~[01][^/~]*)*)*$",
+            "type" : "string",
+            "description" : "A JSON Pointer path pointing to the location to move/copy from.",
+            "example" : "/a/b/c"
+          }
+        }
+      },
+      "Drawing" : {
+        "required" : [ "apiVersion", "kind", "metadata", "spec" ],
+        "type" : "object",
+        "properties" : {
+          "apiVersion" : {
+            "type" : "string"
+          },
+          "kind" : {
+            "type" : "string"
+          },
+          "metadata" : {
+            "$ref" : "#/components/schemas/Metadata"
+          },
+          "spec" : {
+            "$ref" : "#/components/schemas/DrawingSpec"
+          }
+        },
+        "description" : "A chunk of items."
+      },
+      "DrawingList" : {
+        "required" : [ "first", "hasNext", "hasPrevious", "items", "last", "page", "size", "total", "totalPages" ],
+        "type" : "object",
+        "properties" : {
+          "first" : {
+            "type" : "boolean",
+            "description" : "Indicates whether current page is the first page."
+          },
+          "hasNext" : {
+            "type" : "boolean",
+            "description" : "Indicates whether current page has previous page."
+          },
+          "hasPrevious" : {
+            "type" : "boolean",
+            "description" : "Indicates whether current page has previous page."
+          },
+          "items" : {
+            "type" : "array",
+            "description" : "A chunk of items.",
+            "items" : {
+              "$ref" : "#/components/schemas/Drawing"
+            }
+          },
+          "last" : {
+            "type" : "boolean",
+            "description" : "Indicates whether current page is the last page."
+          },
+          "page" : {
+            "type" : "integer",
+            "description" : "Page number, starts from 1. If not set or equal to 0, it means no pagination.",
+            "format" : "int32"
+          },
+          "size" : {
+            "type" : "integer",
+            "description" : "Size of each page. If not set or equal to 0, it means no pagination.",
+            "format" : "int32"
+          },
+          "total" : {
+            "type" : "integer",
+            "description" : "Total elements.",
+            "format" : "int64"
+          },
+          "totalPages" : {
+            "type" : "integer",
+            "description" : "Indicates total pages.",
+            "format" : "int64"
+          }
+        }
+      },
+      "DrawingSpec" : {
+        "type" : "object",
+        "properties" : {
+          "data" : {
+            "type" : "string"
+          },
+          "displayName" : {
+            "type" : "string"
+          },
+          "svg" : {
+            "type" : "string"
+          }
+        }
+      },
+      "JsonPatch" : {
+        "minItems" : 1,
+        "uniqueItems" : true,
+        "type" : "array",
+        "description" : "JSON schema for JSONPatch operations",
+        "items" : {
+          "oneOf" : [ {
+            "$ref" : "#/components/schemas/AddOperation"
+          }, {
+            "$ref" : "#/components/schemas/ReplaceOperation"
+          }, {
+            "$ref" : "#/components/schemas/TestOperation"
+          }, {
+            "$ref" : "#/components/schemas/RemoveOperation"
+          }, {
+            "$ref" : "#/components/schemas/MoveOperation"
+          }, {
+            "$ref" : "#/components/schemas/CopyOperation"
+          } ]
+        }
+      },
+      "Metadata" : {
+        "required" : [ "name" ],
+        "type" : "object",
+        "properties" : {
+          "annotations" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "string"
+            },
+            "description" : "Annotations are like key-value format."
+          },
+          "creationTimestamp" : {
+            "type" : "string",
+            "description" : "Creation timestamp of the Extension.",
+            "format" : "date-time",
+            "nullable" : true
+          },
+          "deletionTimestamp" : {
+            "type" : "string",
+            "description" : "Deletion timestamp of the Extension.",
+            "format" : "date-time",
+            "nullable" : true
+          },
+          "finalizers" : {
+            "uniqueItems" : true,
+            "type" : "array",
+            "nullable" : true,
+            "items" : {
+              "type" : "string",
+              "nullable" : true
+            }
+          },
+          "generateName" : {
+            "type" : "string",
+            "description" : "The name field will be generated automatically according to the given generateName field"
+          },
+          "labels" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "string"
+            },
+            "description" : "Labels are like key-value format."
+          },
+          "name" : {
+            "type" : "string",
+            "description" : "Metadata name"
+          },
+          "version" : {
+            "type" : "integer",
+            "description" : "Current version of the Extension. It will be bumped up every update.",
+            "format" : "int64",
+            "nullable" : true
+          }
+        },
+        "description" : "Metadata of Extension."
+      },
+      "MoveOperation" : {
+        "required" : [ "op", "from", "path" ],
+        "type" : "object",
+        "properties" : {
+          "from" : {
+            "pattern" : "^(/[^/~]*(~[01][^/~]*)*)*$",
+            "type" : "string",
+            "description" : "A JSON Pointer path pointing to the location to move/copy from.",
+            "example" : "/a/b/c"
+          },
+          "op" : {
+            "type" : "string",
+            "enum" : [ "move" ]
+          },
+          "path" : {
+            "pattern" : "^(/[^/~]*(~[01][^/~]*)*)*$",
+            "type" : "string",
+            "description" : "A JSON Pointer path pointing to the location to move/copy from.",
+            "example" : "/a/b/c"
+          }
+        }
+      },
+      "RemoveOperation" : {
+        "required" : [ "op", "path" ],
+        "type" : "object",
+        "properties" : {
+          "op" : {
+            "type" : "string",
+            "enum" : [ "remove" ]
+          },
+          "path" : {
+            "pattern" : "^(/[^/~]*(~[01][^/~]*)*)*$",
+            "type" : "string",
+            "description" : "A JSON Pointer path pointing to the location to move/copy from.",
+            "example" : "/a/b/c"
+          }
+        }
+      },
+      "ReplaceOperation" : {
+        "required" : [ "op", "path", "value" ],
+        "type" : "object",
+        "properties" : {
+          "op" : {
+            "type" : "string",
+            "enum" : [ "replace" ]
+          },
+          "path" : {
+            "pattern" : "^(/[^/~]*(~[01][^/~]*)*)*$",
+            "type" : "string",
+            "description" : "A JSON Pointer path pointing to the location to move/copy from.",
+            "example" : "/a/b/c"
+          },
+          "value" : {
+            "description" : "Value can be any JSON value"
+          }
+        }
+      },
+      "TestOperation" : {
+        "required" : [ "op", "path", "value" ],
+        "type" : "object",
+        "properties" : {
+          "op" : {
+            "type" : "string",
+            "enum" : [ "test" ]
+          },
+          "path" : {
+            "pattern" : "^(/[^/~]*(~[01][^/~]*)*)*$",
+            "type" : "string",
+            "description" : "A JSON Pointer path pointing to the location to move/copy from.",
+            "example" : "/a/b/c"
+          },
+          "value" : {
+            "description" : "Value can be any JSON value"
+          }
+        }
+      },
+      "UploadRequest" : {
+        "type" : "object",
+        "properties" : {
+          "fileName" : {
+            "type" : "string"
+          },
+          "jsonContent" : {
+            "type" : "string"
+          },
+          "userName" : {
+            "type" : "string"
+          }
+        }
+      },
+      "UploadResponse" : {
+        "type" : "object",
+        "properties" : {
+          "url" : {
+            "type" : "string"
+          }
+        }
+      }
+    },
+    "securitySchemes" : {
+      "basicAuth" : {
+        "scheme" : "basic",
+        "type" : "http"
+      },
+      "bearerAuth" : {
+        "bearerFormat" : "JWT",
+        "scheme" : "bearer",
+        "type" : "http"
+      }
+    }
+  }
+}

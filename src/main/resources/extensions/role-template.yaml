@@ -1,0 +1,35 @@
+apiVersion: v1alpha1
+kind: Role
+metadata:
+  name: excalidraw-role-manage
+  labels:
+    halo.run/role-template: "true"
+  annotations:
+    rbac.authorization.halo.run/module: "Excalidraw 管理"
+    rbac.authorization.halo.run/display-name: "Excalidraw 绘图管理"
+    rbac.authorization.halo.run/ui-permissions: |
+      ["plugin:excalidraw:manage"]
+rules:
+  - apiGroups: ["excalidraw.xhhao.com"]
+    resources: ["drawings"]
+    verbs: ["*"]
+  - apiGroups: ["api.console.halo.run"]
+    resources: ["attachments"]
+    verbs: ["*"]
+
+---
+apiVersion: v1alpha1
+kind: Role
+metadata:
+  name: excalidraw-role-view
+  labels:
+    halo.run/role-template: "true"
+  annotations:
+    rbac.authorization.halo.run/module: "Excalidraw 管理"
+    rbac.authorization.halo.run/display-name: "Excalidraw 绘图查看"
+    rbac.authorization.halo.run/ui-permissions: |
+      ["plugin:excalidraw:view"]
+rules:
+  - apiGroups: ["excalidraw.xhhao.com"]
+    resources: ["drawings"]
+    verbs: ["get", "list"]

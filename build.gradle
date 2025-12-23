@@ -1,0 +1,76 @@
+plugins {
+    id 'java'
+    id "io.freefair.lombok" version "8.13"
+    id "run.halo.plugin.devtools" version "0.6.1"
+}
+
+group 'com.xhhao.excalidraw'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation platform('run.halo.tools.platform:plugin:2.21.0')
+    compileOnly 'run.halo.app:api'
+
+    testImplementation 'run.halo.app:api'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = "UTF-8"
+    options.release = 21
+}
+
+tasks.register('processUiResources', Copy) {
+    from project(':ui').layout.buildDirectory.dir('dist')
+    into layout.buildDirectory.dir('resources/main/console')
+    dependsOn project(':ui').tasks.named('assemble')
+    shouldRunAfter tasks.named('processResources')
+}
+
+tasks.named('classes') {
+    dependsOn tasks.named('processUiResources')
+}
+
+halo {
+    version = '2.21'
+}
+
+haloPlugin {
+    openApi {
+        outputDir = file("$rootDir/api-docs/openapi/v3_0")
+        // 用于定义 API 分组规则
+        groupingRules {
+            // 此名称为 group name，定义后 groupedApiMappings 中的 /v3/api-docs/ 后的名称需要与之相同，要避免与 halo 中已经存在的 group 相同避免生成后出现与插件无关的 API
+            excalidrawApi {
+                // 分组显示名称
+                displayName = 'Extension API for Excalidraw'
+                // 分组的 API 规则
+                pathsToMatch = ["/apis/excalidraw.xhhao.com/v1alpha1/**",
+                               "/apis/api.excalidraw.xhhao.com/v1alpha1/**"
+                ]
+            }
+        }
+        groupedApiMappings = [
+                '/v3/api-docs/excalidrawApi': 'excalidrawApi.json'
+        ]
+        generator {
+            // 默认配置可缺省
+            outputDir = file("${projectDir}/ui/src/api/generated")
+        }
+    }
+
+}

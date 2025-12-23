@@ -1,0 +1,46 @@
+apiVersion: v1alpha1
+kind: Setting
+metadata:
+  name: excalidraw-settings
+spec:
+  forms:
+    - group: attachment
+      label: 附件存储
+      formSchema:
+        - $formkit: group
+          name: attachmentSettings
+          label: 附件存储配置
+          help: "配置后可在编辑器中点击「保存到附件」按钮，将 .excalidraw 文件上传到 Halo 附件库，方便备份和管理。"
+          children:
+            - $formkit: select
+              name: fileGroup
+              key: fileGroup
+              id: fileGroup
+              label: 附件存储组
+              searchable: true
+              help: "选择用于存储 .excalidraw 文件的附件分组"
+              action: /apis/storage.halo.run/v1alpha1/groups?labelSelector=%21halo.run%2Fhidden&sort=metadata.creationTimestamp%2Cdesc
+              requestOption:
+                method: GET
+                pageField: page
+                sizeField: size
+                totalField: total
+                itemsField: items
+                labelField: spec.displayName
+                valueField: metadata.name
+            - $formkit: select
+              name: filePolicy
+              key: filePolicy
+              id: filePolicy
+              label: 附件存储策略
+              searchable: true
+              help: "选择用于存储 .excalidraw 文件的存储策略"
+              action: /apis/storage.halo.run/v1alpha1/policies
+              requestOption:
+                method: GET
+                pageField: page
+                sizeField: size
+                totalField: total
+                itemsField: items
+                labelField: spec.displayName
+                valueField: metadata.name
