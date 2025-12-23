@@ -9,11 +9,11 @@ spec:
   requires: ">=2.21.0"
   author:
     name: Handsome
-    website: https://github.com/Handsome
+    website: https://www.xhhao.com
   logo: logo.svg
-  homepage: https://github.com/Handsome/excalidraw#readme
-  repo: https://github.com/Handsome/excalidraw
-  issues: https://github.com/Handsome/excalidraw/issues
+  homepage: https://www.xhhao.com
+  repo: https://github.com/acanyo/excalidraw
+  issues: https://github.com/acanyo/excalidraw/issues
   displayName: "Excalidraw 绘图"
   description: "在 Halo 文章编辑器中集成 Excalidraw 绘图功能"
   license:
