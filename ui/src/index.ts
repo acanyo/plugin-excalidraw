@@ -19,6 +19,7 @@ export default definePlugin({
         meta: {
           title: '绘图管理',
           searchable: true,
+          permissions: ['plugin:excalidraw:view'],
           menu: {
             name: '绘图管理',
             group: 'content',
