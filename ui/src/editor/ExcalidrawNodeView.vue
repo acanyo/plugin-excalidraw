@@ -18,6 +18,9 @@ const isSaving = ref(false)
 const editorRef = ref<InstanceType<typeof ExcalidrawEditor> | null>(null)
 const isExistingDrawing = ref(false)
 const libraryItems = ref<any[]>([])
+const libraryPage = ref(1)
+const libraryTotalPages = ref(1)
+const libraryPageSize = 50
 const inputFileName = ref('')
 const pendingSaveData = ref<{ jsonData: string; previewContent: string } | null>(null)
 const pendingUpload = ref(false)
@@ -428,12 +431,14 @@ const fetchPreviewFormat = async () => {
   }
 }
 
-const loadLibraryItems = async () => {
+const loadLibraryItems = async (page = 1) => {
   try {
     const { data } = await apiExcalidrawCoreApiClient.listDrawings({
-      page: 1,
-      size: 100,
+      page,
+      size: libraryPageSize,
     })
+    libraryPage.value = page
+    libraryTotalPages.value = Math.ceil((data.total || 0) / libraryPageSize) || 1
     const items = (data.items || [])
       .filter((drawing: any) => drawing.spec?.data)
       .map((drawing: any) => {
@@ -535,6 +540,11 @@ watch(
             <VButton type="secondary" class="save-btn" :loading="isSaving" :disabled="isSaving" @click="handleFooterSave">
               {{ isSaving ? '保存中...' : '保存' }}
             </VButton>
+          </div>
+          <div class="library-pagination">
+            <VButton size="sm" :disabled="libraryPage <= 1" @click="loadLibraryItems(libraryPage - 1)">‹</VButton>
+            <span class="page-info">素材 {{ libraryPage }}/{{ libraryTotalPages }}</span>
+            <VButton size="sm" :disabled="libraryPage >= libraryTotalPages" @click="loadLibraryItems(libraryPage + 1)">›</VButton>
           </div>
         </div>
       </div>
@@ -707,6 +717,7 @@ watch(
   display: flex;
   gap: 8px;
   z-index: 4;
+  align-items: center;
   
   .save-btn {
     background: #1f2937 !important;
@@ -717,6 +728,28 @@ watch(
       background: #374151 !important;
       border-color: #374151 !important;
     }
+  }
+}
+
+/* 素材库分页控件 - 左下角 */
+.library-pagination {
+  position: fixed;
+  bottom: 60px;
+  left: 16px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #fff;
+  padding: 8px 12px;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+  z-index: 10000;
+  
+  .page-info {
+    font-size: 12px;
+    color: #6b7280;
+    min-width: 70px;
+    text-align: center;
   }
 }
 
