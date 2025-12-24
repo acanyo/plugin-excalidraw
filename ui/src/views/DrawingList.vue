@@ -149,7 +149,7 @@ watch(selectedNames, (newValue) => {
   <div class="m-0 md:m-4">
     <VCard :body-class="['!p-0']">
       <template #header>
-        <div class="block w-full bg-gray-50 px-4 py-3">
+        <div class="block w-full bg-white px-5 py-4 border-b border-gray-100">
           <div class="relative flex flex-col flex-wrap items-start gap-4 sm:flex-row sm:items-center">
             <div class="hidden items-center sm:flex">
               <input
@@ -206,23 +206,23 @@ watch(selectedNames, (newValue) => {
             <div
               v-for="drawing in drawings"
               :key="drawing.metadata?.name"
-              class="drawing-card group relative bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 cursor-pointer"
+              class="drawing-card group relative bg-white rounded-2xl overflow-hidden transition-all duration-300 cursor-pointer hover:scale-[1.02] hover:-translate-y-1"
               :class="{ 'selected': isSelected(drawing), 'opacity-60': isDeleting(drawing) }"
               @click="toggleSelect(drawing)"
             >
-              <div class="h-40 bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center overflow-hidden border-b border-gray-100">
-                <img v-if="drawing.spec?.previewUrl" :src="drawing.spec.previewUrl" class="max-w-full max-h-full object-contain" alt="预览" />
+              <div class="h-44 bg-gradient-to-br from-slate-50 via-gray-50 to-zinc-100 flex items-center justify-center overflow-hidden p-4">
+                <img v-if="drawing.spec?.previewUrl" :src="drawing.spec.previewUrl" loading="lazy" class="max-w-full max-h-full object-contain" alt="预览" />
                 <div v-else class="flex flex-col items-center justify-center text-gray-300">
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                   </svg>
                 </div>
               </div>
-              <div class="p-4">
-                <div class="truncate text-sm font-semibold text-gray-800" :title="drawing.spec?.displayName || drawing.metadata?.name">
+              <div class="p-4 bg-white border-t border-gray-100">
+                <div class="truncate text-sm font-medium text-gray-700" :title="drawing.spec?.displayName || drawing.metadata?.name">
                   {{ drawing.spec?.displayName || drawing.metadata?.name }}
                 </div>
-                <div class="mt-2 flex items-center justify-between">
+                <div class="mt-2.5 flex items-center justify-between">
                   <span class="flex items-center text-xs text-gray-400">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -291,14 +291,19 @@ watch(selectedNames, (newValue) => {
 }
 
 .drawing-card {
-  border: 2px solid transparent;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .drawing-card:hover {
-  border-color: rgba(59, 130, 246, 0.5);
+  border-color: #38bdf8;
+  box-shadow: 0 10px 25px -5px rgba(56, 189, 248, 0.2), 0 8px 10px -6px rgba(56, 189, 248, 0.15);
 }
 
 .drawing-card.selected {
-  border-color: rgb(59, 130, 246);
+  border-color: #0ea5e9;
+  border-width: 2px;
+  box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.15);
 }
 </style>
