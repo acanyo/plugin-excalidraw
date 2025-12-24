@@ -10,6 +10,8 @@ jobs:
     uses: halo-sigs/reusable-workflows/.github/workflows/plugin-cd.yaml@v3
     secrets:
       halo-pat: ${{ secrets.HALO_PAT }}
+    permissions:
+      contents: write
     with:
       ui-path: "ui"
       pnpm-version: 9
