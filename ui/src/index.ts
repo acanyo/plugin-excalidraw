@@ -1,7 +1,7 @@
 // Excalidraw 资源路径
 ;(window as any).EXCALIDRAW_ASSET_PATH = 'https://cdn.jsdmirror.com/npm/@excalidraw/excalidraw@0.17.6/dist/'
 
-import { definePlugin } from '@halo-dev/console-shared'
+import { definePlugin } from '@halo-dev/ui-shared'
 import { markRaw } from 'vue'
 import { ExcalidrawNode } from './editor/ExcalidrawNode'
 import DrawingList from './views/DrawingList.vue'

@@ -1,13 +1,12 @@
 package com.xhhao.excalidraw;
 
-import static run.halo.app.extension.index.IndexAttributeFactory.simpleAttribute;
-
 import com.xhhao.excalidraw.extension.Drawing;
+import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import run.halo.app.extension.Scheme;
 import run.halo.app.extension.SchemeManager;
-import run.halo.app.extension.index.IndexSpec;
+import run.halo.app.extension.index.IndexSpecs;
 import run.halo.app.plugin.BasePlugin;
 import run.halo.app.plugin.PluginContext;
 
@@ -30,10 +29,10 @@ public class ExcalidrawPlugin extends BasePlugin {
     @Override
     public void start() {
         schemeManager.register(Drawing.class, indexSpecs -> 
-            indexSpecs.add(new IndexSpec()
-                .setName("spec.displayName")
-                .setIndexFunc(simpleAttribute(Drawing.class,
-                    drawing -> drawing.getSpec().getDisplayName())))
+            indexSpecs.add(IndexSpecs.<Drawing, String>single("spec.displayName", String.class)
+                .indexFunc(drawing -> Optional.ofNullable(drawing.getSpec())
+                    .map(Drawing.DrawingSpec::getDisplayName)
+                    .orElse(null)))
         );
         log.info("Excalidraw 插件启动成功！");
     }

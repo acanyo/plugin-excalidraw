@@ -47,7 +47,6 @@ public class Drawing extends AbstractExtension {
         /**
          * 预览图附件的 metadata.name，用于更新时删除旧附件
          */
-        @Schema(requiredMode = REQUIRED)
         private String previewAttachmentName;
     }
 }
